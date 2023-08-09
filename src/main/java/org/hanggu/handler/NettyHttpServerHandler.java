@@ -60,9 +60,7 @@ public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttp
     }
 
     private void doPost(FullHttpRequest request, ChannelHandlerContext ctx) {
-
-
-
+        String uri = request.uri();
     }
 
     private void doGet(FullHttpRequest request, ChannelHandlerContext ctx) {
