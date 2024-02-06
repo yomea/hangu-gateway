@@ -1,8 +1,7 @@
-package org.hanggu.server;
+package org.hangu.server;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -16,8 +15,8 @@ import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.stream.ChunkedWriteHandler;
 import java.util.concurrent.Executor;
 import lombok.extern.slf4j.Slf4j;
-import org.hanggu.constant.CommonCons;
-import org.hanggu.handler.NettyHttpServerHandler;
+import org.hangu.constant.CommonCons;
+import org.hangu.handler.NettyHttpServerHandler;
 
 /**
  * @author wuzhenhong
@@ -52,7 +51,7 @@ public class NettyServer {
                             // 解决大码流的问题，ChunkedWriteHandler：向客户端发送HTML5文件
                             .addLast("http-chunked", new ChunkedWriteHandler())
                             // 自定义处理handler
-                            .addLast("http-server", new NettyHttpServerHandler());
+                            .addLast("http-server", new NettyHttpServerHandler(executor));
                     }
                 });
             serverBootstrap.bind(port).sync().addListener(future -> {

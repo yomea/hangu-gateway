@@ -1,4 +1,4 @@
-package org.hanggu.constant;
+package org.hangu.constant;
 
 /**
  * @author wuzhenhong
@@ -7,4 +7,6 @@ package org.hanggu.constant;
 public class CommonCons {
 
     public static final int DEF_IO_THREADS = Runtime.getRuntime().availableProcessors() << 3;
+    public static final String DEF_GATEWAY_KEY = "hangu.gateway.path";
+    public static final String DEF_GATEWAY_CONFIG = "gateway.properties";
 }

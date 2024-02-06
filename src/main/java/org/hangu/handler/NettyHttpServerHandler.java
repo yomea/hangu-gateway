@@ -1,4 +1,4 @@
-package org.hanggu.handler;
+package org.hangu.handler;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
@@ -10,7 +10,6 @@ import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpVersion;
 import java.nio.charset.StandardCharsets;
-import java.text.MessageFormat;
 import java.util.concurrent.Executor;
 
 /**
