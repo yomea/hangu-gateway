@@ -77,8 +77,8 @@ public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttp
     private void writeAndFlush(HttpServletRequest request, ChannelHandlerContext ctx) {
 
         try {
-            HttpGenericService httpProxy = HttpGenericProxyFactory.httpProxy(request, this.registryService, this.hanguProperties);
-            String resp = httpProxy.http();
+            HttpGenericService httpProxy = HttpGenericProxyFactory.httpProxy(request.getURI(), this.registryService, this.hanguProperties);
+            String resp = httpProxy.http(request);
             ByteBuf byteBuf = ctx.alloc().buffer();
             byteBuf.writeBytes(resp.getBytes(StandardCharsets.UTF_8));
             FullHttpResponse response = this.createResponse(HttpResponseStatus.OK, byteBuf);
