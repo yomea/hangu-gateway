@@ -1,5 +1,7 @@
 package org.hangu.server;
 
+import com.hangu.common.properties.HanguProperties;
+import com.hangu.common.registry.RegistryService;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.ChannelInitializer;
@@ -25,7 +27,7 @@ import org.hangu.handler.NettyHttpServerHandler;
 @Slf4j
 public class NettyServer {
 
-    public static void start(int port, Executor executor) {
+    public static void start(int port, Executor executor, RegistryService registryService, HanguProperties hanguProperties) {
 
         NioEventLoopGroup boss = new NioEventLoopGroup();
         NioEventLoopGroup worker = new NioEventLoopGroup(CommonCons.DEF_IO_THREADS);
@@ -51,7 +53,7 @@ public class NettyServer {
                             // 解决大码流的问题，ChunkedWriteHandler：向客户端发送HTML5文件
                             .addLast("http-chunked", new ChunkedWriteHandler())
                             // 自定义处理handler
-                            .addLast("http-server", new NettyHttpServerHandler(executor));
+                            .addLast("http-server", new NettyHttpServerHandler(executor, registryService, hanguProperties));
                     }
                 });
             serverBootstrap.bind(port).sync().addListener(future -> {

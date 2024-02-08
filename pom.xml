@@ -18,14 +18,41 @@
     <slf4j-version>1.7.21</slf4j-version>
     <logback-version>1.2.3</logback-version>
     <junit.version>4.12</junit.version>
+    <spring-beans.version>5.3.30</spring-beans.version>
+    <commons-lang3.version>3.13.0</commons-lang3.version>
+    <hutool-version>5.3.10</hutool-version>
   </properties>
 
   <dependencies>
+    <dependency>
+      <artifactId>hangu-starter</artifactId>
+      <exclusions>
+        <exclusion>
+          <artifactId>slf4j-log4j12</artifactId>
+          <groupId>org.slf4j</groupId>
+        </exclusion>
+      </exclusions>
+      <groupId>org.hangu</groupId>
+      <version>1.0-SNAPSHOT</version>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+      <version>3.0.1</version>
+      <optional>true</optional>
+    </dependency>
+
+    <dependency>
+      <groupId>cn.hutool</groupId>
+      <artifactId>hutool-all</artifactId>
+      <version>${hutool-version}</version>
+    </dependency>
 
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
-      <version>3.13.0</version>
+      <version>${commons-lang3.version}</version>
     </dependency>
 
     <dependency>
