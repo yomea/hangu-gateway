@@ -1,6 +1,7 @@
 package org.hangu.handler;
 
 import com.hangu.common.entity.HttpServletRequest;
+import com.hangu.common.entity.HttpServletResponse;
 import com.hangu.common.properties.HanguProperties;
 import com.hangu.common.registry.RegistryService;
 import com.hangu.consumer.http.HttpGenericProxyFactory;
@@ -11,12 +12,18 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.FullHttpResponse;
+import io.netty.handler.codec.http.HttpHeaderNames;
+import io.netty.handler.codec.http.HttpHeaderValues;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpVersion;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.Executor;
 import lombok.extern.slf4j.Slf4j;
+import org.hangu.constant.CommonCons;
 
 /**
  * @author wuzhenhong
@@ -47,7 +54,6 @@ public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttp
     }
 
 
-
     private void service(HttpServletRequest request, ChannelHandlerContext ctx) {
         String httpMethod = request.getMethod();
         if (HttpMethod.GET.name().equals(httpMethod)) {
@@ -69,7 +75,8 @@ public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttp
             ByteBuf byteBuf = ctx.alloc().buffer();
             byteBuf.writeBytes(errMsg.getBytes(StandardCharsets.UTF_8));
             FullHttpResponse response = this.createResponse(HttpResponseStatus.METHOD_NOT_ALLOWED, byteBuf);
-            response.headers().add("Content-Type","text/plain;charset=UTF-8");
+            response.headers().add(HttpHeaderNames.CONTENT_TYPE,
+                String.format(CommonCons.CONTENT_TYPE_FORMAT, HttpHeaderValues.TEXT_PLAIN));
             ctx.writeAndFlush(response);
         }
     }
@@ -77,19 +84,23 @@ public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttp
     private void writeAndFlush(HttpServletRequest request, ChannelHandlerContext ctx) {
 
         try {
-            HttpGenericService httpProxy = HttpGenericProxyFactory.httpProxy(request.getURI(), this.registryService, this.hanguProperties);
-            String resp = httpProxy.http(request);
+            HttpGenericService httpProxy = HttpGenericProxyFactory.httpProxy(request.getURI(), this.registryService,
+                this.hanguProperties);
+            HttpServletResponse resp = httpProxy.http(request);
             ByteBuf byteBuf = ctx.alloc().buffer();
-            byteBuf.writeBytes(resp.getBytes(StandardCharsets.UTF_8));
+            byte[] bodyData = resp.getBodyData();
+            byteBuf.writeBytes(Objects.isNull(bodyData) ? new byte[0] : bodyData);
             FullHttpResponse response = this.createResponse(HttpResponseStatus.OK, byteBuf);
-            response.headers().add("Content-Type","application/json;charset=UTF-8");
+            Optional.ofNullable(resp.getHeads()).orElse(Collections.emptyMap())
+                    .forEach((k, v) -> response.headers().add(k, v));
             ctx.writeAndFlush(response);
         } catch (Exception e) {
             log.error("调用失败！", e);
             ByteBuf byteBuf = ctx.alloc().buffer();
             byteBuf.writeBytes("调用失败！".getBytes(StandardCharsets.UTF_8));
             FullHttpResponse response = this.createResponse(HttpResponseStatus.OK, byteBuf);
-            response.headers().add("Content-Type","text/plain;charset=UTF-8");
+            response.headers().add(HttpHeaderNames.CONTENT_TYPE,
+                String.format(CommonCons.CONTENT_TYPE_FORMAT, HttpHeaderValues.TEXT_PLAIN));
             ctx.writeAndFlush(response);
         }
     }
@@ -125,7 +136,6 @@ public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttp
 
     private FullHttpResponse createResponse(HttpResponseStatus status, ByteBuf byteBuf) {
         FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, status, byteBuf);
-        response.headers().set("Content-Length",response.content().readableBytes());
         return response;
     }
 }
