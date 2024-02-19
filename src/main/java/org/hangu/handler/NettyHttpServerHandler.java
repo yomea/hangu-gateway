@@ -2,6 +2,7 @@ package org.hangu.handler;
 
 import com.hangu.common.entity.HttpServletRequest;
 import com.hangu.common.entity.HttpServletResponse;
+import com.hangu.common.exception.RpcInvokerException;
 import com.hangu.common.properties.HanguProperties;
 import com.hangu.common.registry.RegistryService;
 import com.hangu.consumer.http.HttpGenericProxyFactory;
@@ -77,6 +78,8 @@ public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttp
             FullHttpResponse response = this.createResponse(HttpResponseStatus.METHOD_NOT_ALLOWED, byteBuf);
             response.headers().add(HttpHeaderNames.CONTENT_TYPE,
                 String.format(CommonCons.CONTENT_TYPE_FORMAT, HttpHeaderValues.TEXT_PLAIN));
+            response.headers().add(HttpHeaderNames.CONTENT_LENGTH,
+                byteBuf.readableBytes());
             ctx.writeAndFlush(response);
         }
     }
@@ -94,15 +97,26 @@ public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttp
             Optional.ofNullable(resp.getHeads()).orElse(Collections.emptyMap())
                     .forEach((k, v) -> response.headers().add(k, v));
             ctx.writeAndFlush(response);
-        } catch (Exception e) {
-            log.error("调用失败！", e);
-            ByteBuf byteBuf = ctx.alloc().buffer();
-            byteBuf.writeBytes("调用失败！".getBytes(StandardCharsets.UTF_8));
-            FullHttpResponse response = this.createResponse(HttpResponseStatus.OK, byteBuf);
-            response.headers().add(HttpHeaderNames.CONTENT_TYPE,
-                String.format(CommonCons.CONTENT_TYPE_FORMAT, HttpHeaderValues.TEXT_PLAIN));
-            ctx.writeAndFlush(response);
+        } catch (RpcInvokerException e) {
+            log.error("错误码：{}，错误原因：{}", e.getCode(), e.getMessage(), e);
+            this.responseErrorMsg(ctx, String.format("错误码：%s，错误原因：%s", e.getCode(), e.getMessage()));
         }
+        catch (Exception e) {
+            log.error("调用失败！", e);
+            this.responseErrorMsg(ctx, "调用失败！");
+        }
+    }
+
+    private void responseErrorMsg(ChannelHandlerContext ctx, String msg) {
+
+        ByteBuf byteBuf = ctx.alloc().buffer();
+        byteBuf.writeBytes(msg.getBytes(StandardCharsets.UTF_8));
+        FullHttpResponse response = this.createResponse(HttpResponseStatus.OK, byteBuf);
+        response.headers().add(HttpHeaderNames.CONTENT_TYPE,
+            String.format(CommonCons.CONTENT_TYPE_FORMAT, HttpHeaderValues.TEXT_PLAIN));
+        response.headers().add(HttpHeaderNames.CONTENT_LENGTH,
+            byteBuf.readableBytes());
+        ctx.writeAndFlush(response);
     }
 
 

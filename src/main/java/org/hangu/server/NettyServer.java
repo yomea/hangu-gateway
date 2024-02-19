@@ -49,7 +49,7 @@ public class NettyServer {
                             .addLast("http-aggregator", new HttpObjectAggregator(65535))
                             // 响应转码器
                             .addLast("http-encoder", new HttpResponseEncoder())
-                            .addLast("loggingHandler", loggingHandler)
+//                            .addLast("loggingHandler", loggingHandler)
                             // 解决大码流的问题，ChunkedWriteHandler：向客户端发送HTML5文件
                             .addLast("http-chunked", new ChunkedWriteHandler())
                             // 自定义处理handler
