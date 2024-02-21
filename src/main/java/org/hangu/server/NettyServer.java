@@ -15,6 +15,7 @@ import io.netty.handler.codec.http.HttpResponseEncoder;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.stream.ChunkedWriteHandler;
+import java.util.Objects;
 import java.util.concurrent.Executor;
 import lombok.extern.slf4j.Slf4j;
 import org.hangu.constant.CommonCons;
@@ -58,7 +59,12 @@ public class NettyServer {
                 });
             serverBootstrap.bind(port).sync().addListener(future -> {
                 if (!future.isSuccess()) {
-                    log.error("服务启动失败---》绑定失败！！！");
+                    Throwable cause = future.cause();
+                    if(Objects.nonNull(cause)) {
+                        log.error("服务启动失败---》绑定失败！！！", cause);
+                    } else {
+                        log.error("服务启动失败---》绑定失败！！！");
+                    }
                 }
             }).channel().closeFuture().sync();
         } catch (Exception e) {
