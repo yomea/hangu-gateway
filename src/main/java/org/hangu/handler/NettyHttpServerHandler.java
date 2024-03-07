@@ -3,6 +3,7 @@ package org.hangu.handler;
 import com.hangu.common.entity.HttpServletRequest;
 import com.hangu.common.entity.HttpServletResponse;
 import com.hangu.common.exception.RpcInvokerException;
+import com.hangu.common.properties.ExecutorProperties;
 import com.hangu.common.properties.HanguProperties;
 import com.hangu.common.registry.RegistryService;
 import com.hangu.consumer.http.HttpGenericProxyFactory;
@@ -87,21 +88,23 @@ public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttp
     private void writeAndFlush(HttpServletRequest request, ChannelHandlerContext ctx) {
 
         try {
+            ExecutorProperties executorProperties = new ExecutorProperties();
+            executorProperties.setCoreNum(this.hanguProperties.getCoreNum());
+            executorProperties.setMaxNum(this.hanguProperties.getMaxNum());
             HttpGenericService httpProxy = HttpGenericProxyFactory.httpProxy(request.getURI(), this.registryService,
-                this.hanguProperties);
+                executorProperties);
             HttpServletResponse resp = httpProxy.http(request);
             ByteBuf byteBuf = ctx.alloc().buffer();
             byte[] bodyData = resp.getBodyData();
             byteBuf.writeBytes(Objects.isNull(bodyData) ? new byte[0] : bodyData);
             FullHttpResponse response = this.createResponse(HttpResponseStatus.OK, byteBuf);
             Optional.ofNullable(resp.getHeads()).orElse(Collections.emptyMap())
-                    .forEach((k, v) -> response.headers().add(k, v));
+                .forEach((k, v) -> response.headers().add(k, v));
             ctx.writeAndFlush(response);
         } catch (RpcInvokerException e) {
             log.error("错误码：{}，错误原因：{}", e.getCode(), e.getMessage(), e);
             this.responseErrorMsg(ctx, String.format("错误码：%s，错误原因：%s", e.getCode(), e.getMessage()));
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             log.error("调用失败！", e);
             this.responseErrorMsg(ctx, "调用失败！");
         }
