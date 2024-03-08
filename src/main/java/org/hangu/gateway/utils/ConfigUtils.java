@@ -1,4 +1,4 @@
-package org.hangu.utils;
+package org.hangu.gateway.utils;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -8,7 +8,7 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
 import lombok.extern.slf4j.Slf4j;
-import org.hangu.constant.CommonCons;
+import org.hangu.gateway.constant.CommonCons;
 
 /**
  * @author wuzhenhong
@@ -49,7 +49,9 @@ public class ConfigUtils {
                     input.close();
                 }
             } catch (Throwable e) {
-                log.warn("Failed to load " + fileName + " file from " + fileName + "(ingore this file): " + e.getMessage(), e);
+                log.warn(
+                    "Failed to load " + fileName + " file from " + fileName + "(ingore this file): " + e.getMessage(),
+                    e);
             }
             return properties;
         }
@@ -66,14 +68,14 @@ public class ConfigUtils {
             log.warn("Fail to load " + fileName + " file: " + t.getMessage(), t);
         }
 
-        if(list.size() == 0) {
+        if (list.size() == 0) {
             log.warn("No " + fileName + " found on the class path.");
             return properties;
         }
 
         log.info("load " + fileName + " properties file from " + list);
 
-        for(java.net.URL url : list) {
+        for (java.net.URL url : list) {
             try {
                 Properties p = new Properties();
                 InputStream input = url.openStream();
@@ -84,7 +86,8 @@ public class ConfigUtils {
                     } finally {
                         try {
                             input.close();
-                        } catch (Throwable t) {}
+                        } catch (Throwable t) {
+                        }
                     }
                 }
             } catch (Throwable e) {

@@ -1,7 +1,8 @@
-package org.hangu.handler;
+package org.hangu.gateway.handler;
 
 /**
  * 网关配置
+ *
  * @author wuzhenhong
  * @date 2023/8/9 14:10
  */

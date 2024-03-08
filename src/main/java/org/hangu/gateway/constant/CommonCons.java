@@ -1,4 +1,4 @@
-package org.hangu.constant;
+package org.hangu.gateway.constant;
 
 import io.netty.handler.codec.http.HttpHeaderValues;
 

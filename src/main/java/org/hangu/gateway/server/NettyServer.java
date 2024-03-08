@@ -1,7 +1,7 @@
-package org.hangu.server;
+package org.hangu.gateway.server;
 
-import com.hangu.common.properties.HanguProperties;
-import com.hangu.common.registry.RegistryService;
+import com.hangu.rpc.common.properties.HanguProperties;
+import com.hangu.rpc.common.registry.RegistryService;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.ChannelInitializer;
@@ -18,8 +18,8 @@ import io.netty.handler.stream.ChunkedWriteHandler;
 import java.util.Objects;
 import java.util.concurrent.Executor;
 import lombok.extern.slf4j.Slf4j;
-import org.hangu.constant.CommonCons;
-import org.hangu.handler.NettyHttpServerHandler;
+import org.hangu.gateway.constant.CommonCons;
+import org.hangu.gateway.handler.NettyHttpServerHandler;
 
 /**
  * @author wuzhenhong
@@ -28,7 +28,8 @@ import org.hangu.handler.NettyHttpServerHandler;
 @Slf4j
 public class NettyServer {
 
-    public static void start(int port, Executor executor, RegistryService registryService, HanguProperties hanguProperties) {
+    public static void start(int port, Executor executor, RegistryService registryService,
+        HanguProperties hanguProperties) {
 
         NioEventLoopGroup boss = new NioEventLoopGroup();
         NioEventLoopGroup worker = new NioEventLoopGroup(CommonCons.DEF_IO_THREADS);
@@ -54,13 +55,14 @@ public class NettyServer {
                             // 解决大码流的问题，ChunkedWriteHandler：向客户端发送HTML5文件
                             .addLast("http-chunked", new ChunkedWriteHandler())
                             // 自定义处理handler
-                            .addLast("http-server", new NettyHttpServerHandler(executor, registryService, hanguProperties));
+                            .addLast("http-server",
+                                new NettyHttpServerHandler(executor, registryService, hanguProperties));
                     }
                 });
             serverBootstrap.bind(port).sync().addListener(future -> {
                 if (!future.isSuccess()) {
                     Throwable cause = future.cause();
-                    if(Objects.nonNull(cause)) {
+                    if (Objects.nonNull(cause)) {
                         log.error("服务启动失败---》绑定失败！！！", cause);
                     } else {
                         log.error("服务启动失败---》绑定失败！！！");

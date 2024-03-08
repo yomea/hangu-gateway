@@ -1,13 +1,13 @@
-package org.hangu.handler;
+package org.hangu.gateway.handler;
 
-import com.hangu.common.entity.HttpServletRequest;
-import com.hangu.common.entity.HttpServletResponse;
-import com.hangu.common.exception.RpcInvokerException;
-import com.hangu.common.properties.ExecutorProperties;
-import com.hangu.common.properties.HanguProperties;
-import com.hangu.common.registry.RegistryService;
-import com.hangu.consumer.http.HttpGenericProxyFactory;
-import com.hangu.consumer.http.HttpGenericService;
+import com.hangu.rpc.common.entity.HttpServletRequest;
+import com.hangu.rpc.common.entity.HttpServletResponse;
+import com.hangu.rpc.common.exception.RpcInvokerException;
+import com.hangu.rpc.common.properties.ExecutorProperties;
+import com.hangu.rpc.common.properties.HanguProperties;
+import com.hangu.rpc.common.registry.RegistryService;
+import com.hangu.rpc.consumer.http.HttpGenericProxyFactory;
+import com.hangu.rpc.consumer.http.HttpGenericService;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -25,7 +25,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.Executor;
 import lombok.extern.slf4j.Slf4j;
-import org.hangu.constant.CommonCons;
+import org.hangu.gateway.constant.CommonCons;
 
 /**
  * @author wuzhenhong

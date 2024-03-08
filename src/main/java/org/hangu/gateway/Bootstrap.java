@@ -1,14 +1,14 @@
-package org.hangu;
+package org.hangu.gateway;
 
-import com.hangu.common.properties.HanguProperties;
-import com.hangu.common.properties.ZookeeperConfigProperties;
-import com.hangu.common.registry.RegistryService;
-import com.hangu.common.registry.ZookeeperRegistryService;
+import com.hangu.rpc.common.properties.HanguProperties;
+import com.hangu.rpc.common.properties.ZookeeperConfigProperties;
+import com.hangu.rpc.common.registry.RegistryService;
+import com.hangu.rpc.common.registry.ZookeeperRegistryService;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import org.hangu.server.NettyServer;
+import org.hangu.gateway.server.NettyServer;
 
 /**
  * @author wuzhenhong
