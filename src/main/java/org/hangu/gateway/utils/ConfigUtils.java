@@ -6,6 +6,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Objects;
 import java.util.Properties;
 import lombok.extern.slf4j.Slf4j;
 import org.hangu.gateway.constant.CommonCons;
@@ -18,6 +19,23 @@ import org.hangu.gateway.constant.CommonCons;
 public class ConfigUtils {
 
     private static volatile Properties PROPERTIES;
+
+    public static String getProperty(String key) {
+        return getProperty(key, null);
+    }
+    public static String getProperty(String key, String defaultValue) {
+
+        String val = System.getenv(key);
+        if(Objects.isNull(val)) {
+            val = System.getProperty(key);
+        }
+        if(Objects.isNull(val)) {
+            Properties properties = ConfigUtils.getProperties();
+            val = properties.getProperty(key, defaultValue);
+        }
+
+        return val;
+    }
 
     public static Properties getProperties() {
         if (PROPERTIES == null) {
