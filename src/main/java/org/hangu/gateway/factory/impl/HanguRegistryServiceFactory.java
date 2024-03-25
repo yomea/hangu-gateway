@@ -4,6 +4,8 @@ import com.hangu.rpc.common.registry.HanguRegistryService;
 import com.hangu.rpc.common.registry.RegistryService;
 import java.util.Collections;
 import java.util.Properties;
+import org.hangu.center.common.enums.ErrorCodeEnum;
+import org.hangu.center.common.exception.RpcStarterException;
 import org.hangu.center.discover.client.DiscoverClient;
 import org.hangu.center.discover.config.impl.ClientResponseHandlerConfigDefaultImpl;
 import org.hangu.center.discover.properties.ClientProperties;
@@ -23,7 +25,12 @@ public class HanguRegistryServiceFactory implements RegistryServiceFactory {
         String peerNodeHosts = this.getProperty(properties, CommonCons.HANGU_CENTER_NODE_ADDRESS);
         ClientProperties clientProperties = new ClientProperties();
         clientProperties.setPeerNodeHosts(peerNodeHosts);
-        DiscoverClient discoverClient = CenterClientStarter.start(clientProperties, Collections.singletonList(new ClientResponseHandlerConfigDefaultImpl()));
+        DiscoverClient discoverClient;
+        try {
+            discoverClient = CenterClientStarter.start(clientProperties, Collections.singletonList(new ClientResponseHandlerConfigDefaultImpl()));
+        } catch (Exception e) {
+            throw new RpcStarterException(ErrorCodeEnum.FAILURE.getCode(), "注册中心链接异常！", e);
+        }
         return new HanguRegistryService(discoverClient);
     }
 }
